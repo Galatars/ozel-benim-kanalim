@@ -1,7 +1,7 @@
 import yt_dlp
 
 # YouTube Canlı Yayın URL'si
-video_url = 'https://www.youtube.com/watch?v=JnTcs5uo8ZY'
+video_url = 'https://www.youtube.com/watch?v=ztmY_cCtUl0'
 
 # Linki çekmek için ayarlar
 ydl_opts = {
