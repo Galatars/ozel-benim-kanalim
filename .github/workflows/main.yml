@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Gerekli Araclari Yukle
-        run: pip install yt-dlp
+        run: pip install yt-dlp requests
       - name: Linki Guncelle
         run: python update_link.py
       - name: Kaydet ve Yukle
