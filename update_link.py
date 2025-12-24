@@ -1,25 +1,28 @@
 import yt_dlp
+import os
 
-# YouTube Canlı Yayın URL'si
+# Sözcü TV güncel canlı yayın URL'si
 video_url = 'https://www.youtube.com/watch?v=ztmY_cCtUl0'
 
-# Linki çekmek için ayarlar
 ydl_opts = {
     'quiet': True,
     'no_warnings': True,
-    'format': 'best'
+    'format': 'best',
+    'nocheckcertificate': True
 }
 
 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
     try:
+        # Linki al
         info = ydl.extract_info(video_url, download=False)
         m3u8_url = info['url']
         
-        # M3U dosyası içeriği
-        m3u_content = f"#EXTM3U\n#EXTINF:-1,Sozcu TV\n{m3u8_url}"
+        # Dosyayı oluştur
+        with open('sozcu.m3u', 'w', encoding='utf-8') as f:
+            f.write(f"#EXTM3U\n#EXTINF:-1,Sozcu TV\n{m3u8_url}")
         
-        with open('sozcu.m3u', 'w') as f:
-            f.write(m3u_content)
-        print("Link başarıyla güncellendi.")
+        print("Dosya basariyla olusturuldu.")
     except Exception as e:
-        print(f"Hata oluştu: {e}")
+        print(f"Hata: {e}")
+        # Hata olsa bile bos dosya olusmasin diye islemi durdur
+        exit(1)
