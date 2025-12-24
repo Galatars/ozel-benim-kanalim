@@ -2,7 +2,10 @@ name: Otomatik Guncelleme
 on:
   schedule:
     - cron: '0 * * * *' # Her saat başı çalışır
-  workflow_dispatch: # İstediğinde elle çalıştırma butonu ekler
+  workflow_dispatch: # Manuel çalıştırma butonu
+
+permissions:
+  contents: write  # Bu satır 128 hatasını çözen anahtar izindir
 
 jobs:
   build:
