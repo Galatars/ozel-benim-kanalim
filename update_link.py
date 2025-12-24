@@ -1,28 +1,37 @@
 import yt_dlp
-import os
+import sys
 
-# Sözcü TV güncel canlı yayın URL'si
+# Sözcü TV Canlı Yayın URL'si
 video_url = 'https://www.youtube.com/watch?v=ztmY_cCtUl0'
 
+# YouTube'un engellemesini aşmak için eklenen ayarlar
 ydl_opts = {
     'quiet': True,
     'no_warnings': True,
     'format': 'best',
-    'nocheckcertificate': True
+    'noprogress': True,
+    'extract_flat': False,
+    # YouTube'un bot algılamasını zorlaştıran headerlar
+    'http_headers': {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': '*/*',
+        'Accept-Language': 'en-US,en;q=0.9',
+    }
 }
 
-with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-    try:
-        # Linki al
+try:
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(video_url, download=False)
-        m3u8_url = info['url']
+        m3u8_url = info.get('url')
         
-        # Dosyayı oluştur
-        with open('sozcu.m3u', 'w', encoding='utf-8') as f:
-            f.write(f"#EXTM3U\n#EXTINF:-1,Sozcu TV\n{m3u8_url}")
-        
-        print("Dosya basariyla olusturuldu.")
-    except Exception as e:
-        print(f"Hata: {e}")
-        # Hata olsa bile bos dosya olusmasin diye islemi durdur
-        exit(1)
+        if m3u8_url:
+            content = f"#EXTM3U\n#EXTINF:-1,Sozcu TV\n{m3u8_url}"
+            with open('sozcu.m3u', 'w', encoding='utf-8') as f:
+                f.write(content)
+            print("Basarili: sozcu.m3u dosyasi guncellendi.")
+        else:
+            print("Hata: m3u8 linki ayiklanamadi.")
+            sys.exit(1)
+except Exception as e:
+    print(f"Hata olustu: {e}")
+    sys.exit(1)
