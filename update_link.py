@@ -1,75 +1,84 @@
-import yt_dlp
 import requests
 import sys
-import time
 
-# Sözcü TV Video ID (Değişirse burayı güncelle)
+# Sözcü TV Video ID (İstediğin zaman değiştirebilirsin)
 VIDEO_ID = "ztmY_cCtUl0"
-VIDEO_URL = f"https://www.youtube.com/watch?v={VIDEO_ID}"
 
-# Linki alacak fonksiyon
 def get_stream_link():
-    print(f"Hedef Video: {VIDEO_ID}")
-
-    # YÖNTEM 1: yt-dlp (iOS İstemcisi ile - Bazen çalışır)
-    print("--- Yöntem 1: yt-dlp (iOS Modu) deneniyor ---")
-    try:
-        ydl_opts = {
-            'format': 'best',
-            'quiet': True,
-            'extractor_args': {
-                'youtube': {
-                    'player_client': ['ios', 'web_embedded'], # iOS bazen daha az takılır
-                }
-            }
-        }
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(VIDEO_URL, download=False)
-            url = info.get('url')
-            if url:
-                save_m3u(url)
-                return
-    except Exception as e:
-        print(f"Yöntem 1 Başarısız: {str(e)[:100]}...")
-
-    # YÖNTEM 2: Invidious API (Yedek Güç - GitHub IP Engelini Aşar)
-    print("--- Yöntem 2: Invidious API (Proxy) deneniyor ---")
-    instances = [
-        "https://inv.nadeko.net",
-        "https://invidious.jing.rocks",
-        "https://vid.puffyan.us",
-        "https://invidious.nerdvpn.de"
+    print(f"Hedef Video ID: {VIDEO_ID}")
+    
+    # 1. YÖNTEM: Piped API (En sağlam yöntem)
+    # Bu API'ler YouTube engellerini kendi sunucularında aşar.
+    piped_instances = [
+        "https://pipedapi.kavin.rocks",
+        "https://api.piped.privacydev.net",
+        "https://pipedapi.smnz.de",
+        "https://api.piped.drg.li"
     ]
 
-    for instance in instances:
+    print("--- Yöntem 1: Piped API deneniyor ---")
+    for base_url in piped_instances:
         try:
-            api_url = f"{instance}/api/v1/videos/{VIDEO_ID}"
-            print(f"Sunucu deneniyor: {instance}...")
-            response = requests.get(api_url, timeout=10)
+            url = f"{base_url}/streams/{VIDEO_ID}"
+            print(f"Sunucuya soruluyor: {base_url}...")
             
-            if response.status_code == 200:
-                data = response.json()
-                # Canlı yayın linkini (hlsUrl) bul
-                if 'hlsUrl' in data:
-                    m3u8_url = data['hlsUrl']
-                    # Linkin çalıştığından emin olmak için bazen decode gerekebilir
+            # Timeout süresini kısa tutuyoruz ki hızlı geçsin
+            r = requests.get(url, timeout=5)
+            
+            if r.status_code == 200:
+                data = r.json()
+                # HLS linkini (canlı yayın akışı) bulalım
+                if "hls" in data and data["hls"]:
+                    m3u8_url = data["hls"]
+                    print(f"Link Piped üzerinden bulundu!")
+                    save_m3u(m3u8_url)
+                    return
+        except Exception as e:
+            print(f"Sunucu pas geçildi: {e}")
+            continue
+
+    # 2. YÖNTEM: Invidious API (Yedek)
+    # Daha taze ve çalışan sunucu listesi
+    invidious_instances = [
+        "https://inv.bp.projectsegfau.lt",
+        "https://invidious.fdn.fr",
+        "https://inv.tux.pizza",
+        "https://invidious.flokinet.to"
+    ]
+
+    print("\n--- Yöntem 2: Invidious API deneniyor ---")
+    for base_url in invidious_instances:
+        try:
+            url = f"{base_url}/api/v1/videos/{VIDEO_ID}"
+            print(f"Sunucuya soruluyor: {base_url}...")
+            
+            r = requests.get(url, timeout=5)
+            if r.status_code == 200:
+                data = r.json()
+                if "hlsUrl" in data:
+                    m3u8_url = data["hlsUrl"]
+                    # Linki düzelt (bazen encoded gelir)
                     m3u8_url = m3u8_url.replace("%3A", ":").replace("%2F", "/")
+                    print(f"Link Invidious üzerinden bulundu!")
                     save_m3u(m3u8_url)
                     return
         except Exception as e:
             print(f"Sunucu hatası: {e}")
             continue
 
-    print("HATA: Hiçbir yöntemle link alınamadı.")
+    print("\nKRİTİK HATA: Tüm sunucular denendi ama link alınamadı.")
     sys.exit(1)
 
 def save_m3u(stream_url):
-    print(f"BAŞARILI! Link bulundu: {stream_url[:40]}...")
-    content = f"#EXTM3U\n#EXTINF:-1 group-title=\"Haber\" tvg-logo=\"https://yt3.googleusercontent.com/ytc/AIdro_kX4C_A2f8hXgG_d7D_h9tX8qX8_x8_x8=s900-c-k-c0x00ffffff-no-rj\",SÖZCÜ TV Canlı Yayını ᴴᴰ\n{stream_url}"
+    print(f"KAYDEDİLİYOR: {stream_url[:50]}...")
+    
+    # M3U dosya içeriği
+    content = f"#EXTM3U\n#EXTINF:-1 group-title=\"Haber\" tvg-logo=\"https://yt3.googleusercontent.com/ytc/AIdro_kX4C_A43gq_LqWfQ_oQ_oQ=s0\",SÖZCÜ TV Canlı Yayını ᴴᴰ\n{stream_url}"
     
     with open('sozcu.m3u', 'w', encoding='utf-8') as f:
         f.write(content)
-    print("Dosya kaydedildi.")
+    
+    print("sozcu.m3u dosyası başarıyla oluşturuldu.")
 
 if __name__ == "__main__":
     get_stream_link()
