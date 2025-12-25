@@ -1,7 +1,8 @@
 import requests
-import yt_dlp
+import re
 import sys
 import time
+import json
 
 # Sözcü TV Video ID
 VIDEO_ID = "ztmY_cCtUl0"
@@ -11,98 +12,92 @@ def get_stream_link():
     print("-" * 30)
 
     # ---------------------------------------------------------
-    # YÖNTEM 1: yt-dlp (Android VR Modu)
+    # YÖNTEM 1: Embed Sayfası (Manuel Kazıma) - EN GÜÇLÜ YÖNTEM
     # ---------------------------------------------------------
-    print("[1/3] yt-dlp (Android VR Modu) deneniyor...")
+    print("[1/2] Embed yöntemi deneniyor...")
+    
+    embed_url = f"https://www.youtube.com/embed/{VIDEO_ID}"
+    
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+        "Referer": "https://www.youtube.com/",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+
     try:
-        ydl_opts = {
-            'format': 'best',
-            'quiet': True,
-            'extractor_args': {
-                'youtube': {
-                    'player_client': ['android_vr'],
-                    'player_skip': ['web', 'tv'],
-                }
+        response = requests.get(embed_url, headers=headers, timeout=10)
+        html_content = response.text
+
+        # Regex ile hlsManifestUrl'yi arıyoruz
+        match = re.search(r'"hlsManifestUrl":"(https:[^"]+)"', html_content)
+        
+        if match:
+            # Link bulundu ama içinde \/ karakterleri var, temizleyelim
+            raw_link = match.group(1)
+            clean_link = raw_link.replace("\\/", "/")
+            print(">>> BAŞARILI: Embed sayfasından link çekildi!")
+            save_m3u(clean_link)
+            return
+        else:
+            print("Embed sayfasında manifest bulunamadı. (IP engeli olabilir)")
+
+    except Exception as e:
+        print(f"Embed hatası: {e}")
+
+    # ---------------------------------------------------------
+    # YÖNTEM 2: Android Istemcisi (POST İsteği ile)
+    # ---------------------------------------------------------
+    print("\n[2/2] Android API Simülasyonu deneniyor...")
+    
+    # Bu yöntem yt-dlp'nin yaptığı işi manuel ve daha gizli yapar
+    api_url = "https://www.youtube.com/youtubei/v1/player"
+    
+    payload = {
+        "videoId": VIDEO_ID,
+        "context": {
+            "client": {
+                "clientName": "ANDROID",
+                "clientVersion": "17.31.35",
+                "androidSdkVersion": 30,
+                "userAgent": "com.google.android.youtube/17.31.35 (Linux; U; Android 11) gzip",
+                "hl": "en",
+                "timeZone": "UTC",
+                "utcOffsetMinutes": 0
             }
         }
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            url = f"https://www.youtube.com/watch?v={VIDEO_ID}"
-            info = ydl.extract_info(url, download=False)
-            if 'url' in info:
-                print(">>> BAŞARILI: yt-dlp linki kaptı!")
-                save_m3u(info['url'])
-                return
+    }
+
+    try:
+        r = requests.post(api_url, json=payload, headers={"User-Agent": headers["User-Agent"]}, timeout=10)
+        data = r.json()
+        
+        # JSON içinden hlsManifestUrl'yi bulmaya çalışalım
+        if "streamingData" in data and "hlsManifestUrl" in data["streamingData"]:
+            link = data["streamingData"]["hlsManifestUrl"]
+            print(">>> BAŞARILI: Android API üzerinden link alındı!")
+            save_m3u(link)
+            return
+        else:
+            print("Android API yanıt verdi ama link içermiyor.")
+            
     except Exception as e:
-        print(f"yt-dlp başarısız oldu: {str(e)[:50]}...")
+        print(f"Android API hatası: {e}")
 
-    # ---------------------------------------------------------
-    # YÖNTEM 2: API Ordusu (Piped & Invidious)
-    # ---------------------------------------------------------
-    print("\n[2/3] API Ordusu devreye giriyor...")
-    
-    instances = [
-        # En Güçlüler
-        f"https://pipedapi.kavin.rocks/streams/{VIDEO_ID}",
-        f"https://yewtu.be/api/v1/videos/{VIDEO_ID}",
-        f"https://vid.puffyan.us/api/v1/videos/{VIDEO_ID}",
-        # Yedekler
-        f"https://api.piped.io/streams/{VIDEO_ID}",
-        f"https://pipedapi.smnz.de/streams/{VIDEO_ID}",
-        f"https://inv.nadeko.net/api/v1/videos/{VIDEO_ID}",
-        f"https://invidious.jing.rocks/api/v1/videos/{VIDEO_ID}",
-        f"https://invidious.nerdvpn.de/api/v1/videos/{VIDEO_ID}",
-        f"https://inv.tux.pizza/api/v1/videos/{VIDEO_ID}",
-        f"https://invidious.fdn.fr/api/v1/videos/{VIDEO_ID}",
-    ]
-
-    session = requests.Session()
-    session.headers.update({
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    })
-
-    for api_url in instances:
-        try:
-            domain = api_url.split("/")[2]
-            print(f"Denenen sunucu: {domain} ...", end=" ")
-            
-            r = session.get(api_url, timeout=5)
-            
-            if r.status_code == 200:
-                data = r.json()
-                
-                # Piped formatı
-                if "hls" in data and data["hls"]:
-                    print("TUTTU! (Piped)")
-                    save_m3u(data["hls"])
-                    return
-                
-                # Invidious formatı
-                if "hlsUrl" in data and data["hlsUrl"]:
-                    print("TUTTU! (Invidious)")
-                    clean_url = data["hlsUrl"].replace("%3A", ":").replace("%2F", "/")
-                    save_m3u(clean_url)
-                    return
-                print("Link yok.")
-            else:
-                print(f"Hata: {r.status_code}")
-                
-        except Exception:
-            print("Erişilemedi.")
-            continue
-
-    print("\n!!! KRİTİK HATA: Hiçbir sunucudan yanıt alınamadı. !!!")
+    # Başarısız olursa
+    print("\n!!! KRİTİK HATA: Tüm kapılar kapalı. GitHub IP'si tamamen engellenmiş. !!!")
     sys.exit(1)
 
 def save_m3u(stream_url):
     print(f"\nDosya kaydediliyor...")
     
-    # HATA DÜZELTİLDİ: Tek tırnak kullanarak karışıklığı önledik
-    m3u_content = f'''#EXTM3U
-#EXTINF:-1 group-title="Haber" tvg-logo="https://yt3.googleusercontent.com/ytc/APkrFKamA6E3QWjE9YwQYx9w",SÖZCÜ TV Canlı Yayını ᴴᴰ
-{stream_url}'''
+    # Python 3 tırnak bloğu hatasını önlemek için güvenli yazım
+    line1 = "#EXTM3U"
+    line2 = '#EXTINF:-1 group-title="Haber" tvg-logo="https://yt3.googleusercontent.com/ytc/APkrFKamA6E3QWjE9YwQYx9w",SÖZCÜ TV Canlı Yayını ᴴᴰ'
+    
+    content = f"{line1}\n{line2}\n{stream_url}"
     
     with open('sozcu.m3u', 'w', encoding='utf-8') as f:
-        f.write(m3u_content)
+        f.write(content)
     
     print(">>> sozcu.m3u BAŞARIYLA OLUŞTURULDU <<<")
 
