@@ -32,8 +32,9 @@ jobs:
 
       - name: Kaydet ve Yukle
         run: |
-          git config --global user.name 'GitHub Action Bot'
-          git config --global user.email 'actions@github.com'
-          git add sozcu.m3u
-          git commit -m "Link guncellendi: $(date)" || exit 0
-          git push
+            git config --global user.name 'GitHub Action Bot'
+            git config --global user.email 'actions@github.com'
+            # ARTIK kanallar.m3u DOSYASINI EKLİYORUZ
+            git add kanallar.m3u
+            git commit -m "Kanallar guncellendi: $(date)" || exit 0
+            git push
