@@ -1,55 +1,75 @@
 import yt_dlp
+import requests
 import sys
+import time
 
-# BURASI SENİN DÜZENLEYECEĞİN YER
-# Link değişirse sadece buradaki ID'yi değiştirmen yeterli.
+# Sözcü TV Video ID (Değişirse burayı güncelle)
 VIDEO_ID = "ztmY_cCtUl0"
-video_url = f"https://www.youtube.com/watch?v={VIDEO_ID}"
+VIDEO_URL = f"https://www.youtube.com/watch?v={VIDEO_ID}"
 
+# Linki alacak fonksiyon
 def get_stream_link():
-    # YouTube bot korumasını aşmak için kritik ayarlar
-    ydl_opts = {
-        'format': 'best',
-        'quiet': True,
-        'no_warnings': True,
-        # Bu ayar YouTube'u kandırıp "Giriş Yap" hatasını engeller
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['android', 'ios'], # Mobil gibi davran
-                'player_skip': ['web', 'tv'],        # Web arayüzünü atla
+    print(f"Hedef Video: {VIDEO_ID}")
+
+    # YÖNTEM 1: yt-dlp (iOS İstemcisi ile - Bazen çalışır)
+    print("--- Yöntem 1: yt-dlp (iOS Modu) deneniyor ---")
+    try:
+        ydl_opts = {
+            'format': 'best',
+            'quiet': True,
+            'extractor_args': {
+                'youtube': {
+                    'player_client': ['ios', 'web_embedded'], # iOS bazen daha az takılır
+                }
             }
         }
-    }
-
-    try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            print(f"Bağlanılıyor: {video_url}")
-            
-            # Bilgileri çek
-            info = ydl.extract_info(video_url, download=False)
-            
-            # Canlı yayın linkini (m3u8) al
-            stream_url = info.get('url')
-            
-            if stream_url:
-                print("Link başarıyla çekildi.")
-                
-                # M3U dosyasını oluştur
-                # group-title ve kanal adını senin istediğin gibi ayarladım
-                content = f"#EXTM3U\n#EXTINF:-1 group-title=\"Haber\",SÖZCÜ TV Canlı Yayını ᴴᴰ\n{stream_url}"
-                
-                with open('sozcu.m3u', 'w', encoding='utf-8') as f:
-                    f.write(content)
-                
-                print("sozcu.m3u dosyası başarıyla kaydedildi.")
-            else:
-                print("HATA: Link bulunamadı. Video yayında olmayabilir.")
-                sys.exit(1)
-
+            info = ydl.extract_info(VIDEO_URL, download=False)
+            url = info.get('url')
+            if url:
+                save_m3u(url)
+                return
     except Exception as e:
-        print(f"KRİTİK HATA: {str(e)}")
-        # Hata mesajı ver ama işlemi başarısız sayıp durdurma (GitHub Action kızarmasın)
-        sys.exit(1)
+        print(f"Yöntem 1 Başarısız: {str(e)[:100]}...")
+
+    # YÖNTEM 2: Invidious API (Yedek Güç - GitHub IP Engelini Aşar)
+    print("--- Yöntem 2: Invidious API (Proxy) deneniyor ---")
+    instances = [
+        "https://inv.nadeko.net",
+        "https://invidious.jing.rocks",
+        "https://vid.puffyan.us",
+        "https://invidious.nerdvpn.de"
+    ]
+
+    for instance in instances:
+        try:
+            api_url = f"{instance}/api/v1/videos/{VIDEO_ID}"
+            print(f"Sunucu deneniyor: {instance}...")
+            response = requests.get(api_url, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                # Canlı yayın linkini (hlsUrl) bul
+                if 'hlsUrl' in data:
+                    m3u8_url = data['hlsUrl']
+                    # Linkin çalıştığından emin olmak için bazen decode gerekebilir
+                    m3u8_url = m3u8_url.replace("%3A", ":").replace("%2F", "/")
+                    save_m3u(m3u8_url)
+                    return
+        except Exception as e:
+            print(f"Sunucu hatası: {e}")
+            continue
+
+    print("HATA: Hiçbir yöntemle link alınamadı.")
+    sys.exit(1)
+
+def save_m3u(stream_url):
+    print(f"BAŞARILI! Link bulundu: {stream_url[:40]}...")
+    content = f"#EXTM3U\n#EXTINF:-1 group-title=\"Haber\" tvg-logo=\"https://yt3.googleusercontent.com/ytc/AIdro_kX4C_A2f8hXgG_d7D_h9tX8qX8_x8_x8=s900-c-k-c0x00ffffff-no-rj\",SÖZCÜ TV Canlı Yayını ᴴᴰ\n{stream_url}"
+    
+    with open('sozcu.m3u', 'w', encoding='utf-8') as f:
+        f.write(content)
+    print("Dosya kaydedildi.")
 
 if __name__ == "__main__":
     get_stream_link()
