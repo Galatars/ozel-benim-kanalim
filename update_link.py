@@ -1,44 +1,97 @@
 import yt_dlp
 import sys
 
-# Sözcü TV Video ID
-VIDEO_ID = "ztmY_cCtUl0"
-URL = f"https://www.youtube.com/watch?v={VIDEO_ID}"
-
-def get_stream_link():
-    print("VPN Aktif. YouTube'a bağlanılıyor...")
+# KANAL LISTESI
+# Buraya istediğin kadar kanal ekleyebilirsin.
+# Format: "Kanal Adı": "Youtube Kanal Linki"
+CHANNELS = [
+    {
+        "name": "Sözcü TV",
+        "url": "https://www.youtube.com/@SozcuTV/live",
+        "group": "Haber"
+    },
+    {
+        "name": "CNBC-e",
+        "url": "https://www.youtube.com/@cnbce/live",
+        "group": "Ekonomi"
+    },
+    {
+        "name": "NOW TV (FOX)",
+        "url": "https://www.youtube.com/@NOWturkiye/live",
+        "group": "Ulusal"
+    },
+    {
+        "name": "Habertürk",
+        "url": "https://www.youtube.com/@HaberturkTV/live",
+        "group": "Haber"
+    },
+    {
+        "name": "Teve2", # Tele 2 dediğin için Teve2 ekledim
+        "url": "https://www.youtube.com/@teve2/live",
+        "group": "Eglence"
+    },
+    # Eğer TELE1 istiyorsan üstteki Teve2'yi silip bunu açabilirsin:
+    # {"name": "Tele1", "url": "https://www.youtube.com/@tele1comtr/live", "group": "Haber"},
     
+    {
+        "name": "Cartoon Network",
+        "url": "https://www.youtube.com/@CartoonNetworkTurkiye/live",
+        "group": "Cocuk"
+    },
+    {
+        "name": "SpaceToon",
+        "url": "https://www.youtube.com/@spacetoon/live",
+        "group": "Cocuk"
+    }
+]
+
+def get_stream_link(channel_info):
     ydl_opts = {
         'format': 'best',
         'quiet': True,
         'no_warnings': True,
-        # VPN olduğu için sadece basit bir Android taklidi yeterli
         'extractor_args': {
             'youtube': {
-                'player_client': ['android'],
+                'player_client': ['android'], # WARP olduğu için Android taklidi yeterli
             }
         }
     }
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(URL, download=False)
+            print(f"Taranıyor: {channel_info['name']}...")
+            info = ydl.extract_info(channel_info['url'], download=False)
             
             if 'url' in info:
-                stream_url = info['url']
-                print(">>> BAŞARILI: Link alındı!")
-                
-                content = f"#EXTM3U\n#EXTINF:-1 group-title=\"Haber\" tvg-logo=\"https://yt3.googleusercontent.com/ytc/APkrFKamA6E3QWjE9YwQYx9w\",SÖZCÜ TV Canlı Yayını ᴴᴰ\n{stream_url}"
-                
-                with open('sozcu.m3u', 'w', encoding='utf-8') as f:
-                    f.write(content)
+                return info['url']
             else:
-                print("Link bulunamadı.")
-                sys.exit(1)
+                return None
 
     except Exception as e:
-        print(f"Hata: {str(e)}")
-        sys.exit(1)
+        print(f"HATA ({channel_info['name']}): Yayın yok veya alınamadı.")
+        return None
+
+def update_channels():
+    print("VPN (WARP) Aktif. Kanallar taranıyor...")
+    
+    m3u_content = "#EXTM3U\n"
+    
+    for channel in CHANNELS:
+        stream_url = get_stream_link(channel)
+        
+        if stream_url:
+            # M3U formatına uygun ekleme yap
+            m3u_content += f'#EXTINF:-1 group-title="{channel["group"]}",{channel["name"]}\n'
+            m3u_content += f'{stream_url}\n'
+            print(f">>> EKLENDİ: {channel['name']}")
+        else:
+            print(f"--- ATLANDI: {channel['name']} (Canlı yayın yok)")
+
+    # Dosyayı kaydet (kanallar.m3u olarak)
+    with open('kanallar.m3u', 'w', encoding='utf-8') as f:
+        f.write(m3u_content)
+    
+    print("\n>>> İŞLEM TAMAM: 'kanallar.m3u' dosyası oluşturuldu. <<<")
 
 if __name__ == "__main__":
-    get_stream_link()
+    update_channels()
