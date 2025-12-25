@@ -2,8 +2,8 @@ name: Otomatik Guncelleme
 
 on:
   schedule:
-    - cron: '0 */3 * * *' # Her 3 saatte bir çalışır
-  workflow_dispatch:      # Manuel tetikleme butonu
+    - cron: '0 */3 * * *' # Her 3 saatte bir
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -12,19 +12,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Depoyu Çek
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
+      # İŞTE SİHİRLİ ADIM: VPN (WARP) KURULUYOR
+      # Bu adım IP adresini değiştirir ve YouTube engelini kaldırır.
+      - name: WARP (VPN) Baslat
+        uses: fscarmen/warp-on-actions@v1.1
+        
       - name: Python Kur
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
       - name: Gerekli Araclari Yukle
-        # İŞTE ÇÖZÜM BURADA: Hem requests hem yt-dlp yükleniyor
-        run: |
-          pip install requests
-          pip install https://github.com/yt-dlp/yt-dlp/archive/master.zip
+        run: pip install https://github.com/yt-dlp/yt-dlp/archive/master.zip
 
       - name: Linki Guncelle
         run: python update_link.py
@@ -34,6 +35,5 @@ jobs:
           git config --global user.name 'GitHub Action Bot'
           git config --global user.email 'actions@github.com'
           git add sozcu.m3u
-          # Eğer değişiklik yoksa hata verme, devam et
           git commit -m "Link guncellendi: $(date)" || exit 0
           git push
