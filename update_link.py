@@ -1,34 +1,42 @@
-import requests
-import re
+import yt_dlp
 import sys
 
-# Sözcü TV Video ID
-video_id = "ztmY_cCtUl0"
-url = f"https://www.youtube.com/embed/{video_id}"
+# Sözcü TV Canlı Yayın URL'si (Video ID yerine bunu kullanmak daha garantidir)
+channel_url = "https://www.youtube.com/@SozcuTV/live"
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Accept-Language": "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7"
-}
+def get_stream_link():
+    ydl_opts = {
+        'format': 'best',      # En iyi kaliteyi seç
+        'quiet': True,         # Gereksiz çıktı verme
+        'no_warnings': True,
+        'extract_flat': False, # Derinlemesine tarama yap
+    }
 
-try:
-    response = requests.get(url, headers=headers)
-    html = response.text
-    
-    # hlsManifestUrl'yi bulmak için regex kullanıyoruz
-    match = re.search(r'"hlsManifestUrl":"(https:[^"]+)"', html)
-    
-    if match:
-        m3u8_url = match.group(1).replace("\\/", "/")
-        content = f"#EXTM3U\n#EXTINF:-1,Sozcu TV\n{m3u8_url}"
-        
-        with open('sozcu.m3u', 'w', encoding='utf-8') as f:
-            f.write(content)
-        print("Basarili: Orijinal YouTube m3u8 linki bulundu.")
-    else:
-        print("HATA: m3u8 linki sayfa icinde bulunamadi. YouTube botu engellemis olabilir.")
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            # Link bilgilerini çek
+            info = ydl.extract_info(channel_url, download=False)
+            
+            # Canlı yayın akış linkini (m3u8) al
+            stream_url = info.get('url')
+            
+            if stream_url:
+                print(f"Link bulundu: {stream_url[:50]}...")
+                
+                # M3U dosyasını oluştur
+                content = f"#EXTM3U\n#EXTINF:-1,Sozcu TV\n{stream_url}"
+                
+                with open('sozcu.m3u', 'w', encoding='utf-8') as f:
+                    f.write(content)
+                
+                print("sozcu.m3u dosyası başarıyla güncellendi.")
+            else:
+                print("HATA: Akış linki bulunamadı.")
+                sys.exit(1)
+
+    except Exception as e:
+        print(f"Kritik Hata: {str(e)}")
         sys.exit(1)
 
-except Exception as e:
-    print(f"Sistemsel Hata: {e}")
-    sys.exit(1)
+if __name__ == "__main__":
+    get_stream_link()
