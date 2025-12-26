@@ -1,42 +1,10 @@
-name: Otomatik Guncelleme
-
-on:
-  schedule:
-    - cron: '0 */3 * * *' # Her 3 saatte bir
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      # İŞTE SİHİRLİ ADIM: VPN (WARP) KURULUYOR
-      # Bu adım IP adresini değiştirir ve YouTube engelini kaldırır.
-      - name: WARP (VPN) Baslat
-        uses: fscarmen/warp-on-actions@v1.1
-        
-      - name: Python Kur
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Gerekli Araclari Yukle
-        run: pip install https://github.com/yt-dlp/yt-dlp/archive/master.zip
-
-      - name: Linki Guncelle
-        run: python update_link.py
-
-      - name: Kaydet ve Yukle
+- name: Kaydet ve Yukle
         run: |
           git config --global user.name 'GitHub Action Bot'
           git config --global user.email 'actions@github.com'
           
-          # DİKKAT: Yıldız (*) işareti tüm m3u dosyalarını seçer
+          # Bu satır, oluşan TÜM ayrı m3u dosyalarını yükler
           git add *.m3u
           
-          git commit -m "Kanallar ayri ayri guncellendi: $(date)" || exit 0
+          git commit -m "Kanallar guncellendi: $(date)" || exit 0
           git push
