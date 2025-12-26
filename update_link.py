@@ -40,4 +40,61 @@ CHANNELS = [
     
     # --- YABANCI & DÜNYA (Ücretsiz) ---
     {"name": "NASA TV", "url": "https://www.youtube.com/@NASA/live", "filename": "nasa_tv.m3u"},
-    {"name": "Al Jazeera English", "url": "https://www
+    {"name": "Al Jazeera English", "url": "https://www.youtube.com/@aljazeeraenglish/live", "filename": "al_jazeera_en.m3u"},
+    {"name": "France 24 English", "url": "https://www.youtube.com/@FRANCE24.English/live", "filename": "france24_en.m3u"},
+    {"name": "DW News (Almanya)", "url": "https://www.youtube.com/@dwnews/live", "filename": "dw_news.m3u"},
+    {"name": "Euronews Türkçe", "url": "https://www.youtube.com/@euronews.turkce/live", "filename": "euronews_tr.m3u"},
+    
+    # --- AZERBAYCAN ---
+    {"name": "İctimai TV", "url": "https://www.youtube.com/@ictimaitv/live", "filename": "ictimai_tv.m3u"},
+    {"name": "ARB TV", "url": "https://www.youtube.com/@arbtv/live", "filename": "arb_tv.m3u"}
+]
+
+def get_stream_link(url):
+    # WARP VPN açık olduğu için Android taklidi yeterli
+    ydl_opts = {
+        'format': 'best',
+        'quiet': True,
+        'no_warnings': True,
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['android'],
+            }
+        }
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            # Sadece linki al, indirme yapma
+            info = ydl.extract_info(url, download=False)
+            if 'url' in info:
+                return info['url']
+    except Exception:
+        return None
+    return None
+
+def update_separate_files():
+    print(f"Toplam {len(CHANNELS)} kanal taranıyor...")
+    print("-" * 40)
+    
+    for channel in CHANNELS:
+        print(f"İşleniyor: {channel['name']}...", end=" ")
+        
+        stream_url = get_stream_link(channel['url'])
+        
+        if stream_url:
+            # Dosya içeriği
+            content = f"#EXTM3U\n#EXTINF:-1,{channel['name']}\n{stream_url}"
+            
+            # Kanalın özel dosyasına yaz
+            with open(channel['filename'], 'w', encoding='utf-8') as f:
+                f.write(content)
+            print(f"✅ OK ({channel['filename']})")
+        else:
+            print("❌ YAYIN YOK (Dosya oluşturulmadı)")
+
+    print("-" * 40)
+    print("Tüm işlemler tamamlandı.")
+
+if __name__ == "__main__":
+    update_separate_files()
