@@ -1,62 +1,54 @@
 import yt_dlp
 import sys
 
-# GENİŞLETİLMİŞ KANAL LİSTESİ
-# Her biri için ayrı bir .m3u8 dosyası oluşturulacak.
+# GENİŞ KAPSAMLI KANAL LİSTESİ
+# Her biri için AYRI bir .m3u dosyası oluşturulur.
 CHANNELS = [
-    # --- ULUSAL & EĞLENCE ---
-    {"name": "Show TV", "url": "https://www.youtube.com/@ShowTV/live", "filename": "show_tv.m3u8"},
-    {"name": "Kanal 7", "url": "https://www.youtube.com/@kanal7/live", "filename": "kanal7.m3u8"},
-    {"name": "Beyaz TV", "url": "https://www.youtube.com/@BeyazTV/live", "filename": "beyaz_tv.m3u8"},
-    {"name": "TV8 Buçuk", "url": "https://www.youtube.com/@tv8bucuk/live", "filename": "tv8_bucuk.m3u8"},
-    {"name": "Teve2", "url": "https://www.youtube.com/@teve2/live", "filename": "teve2.m3u8"},
-    {"name": "NOW TV", "url": "https://www.youtube.com/@NOWturkiye/live", "filename": "now.m3u8"},
-    {"name": "360 TV", "url": "https://www.youtube.com/@tv360comtr/live", "filename": "360_tv.m3u8"},
-    
-    # --- HABER (TÜRKİYE) ---
-    {"name": "Sözcü TV", "url": "https://www.youtube.com/@SozcuTV/live", "filename": "sozcu.m3u8"},
-    {"name": "Halk TV", "url": "https://www.youtube.com/@halktv/live", "filename": "halk_tv.m3u8"},
-    {"name": "Tele1", "url": "https://www.youtube.com/@tele1comtr/live", "filename": "tele1.m3u8"},
-    {"name": "Habertürk", "url": "https://www.youtube.com/@HaberturkTV/live", "filename": "haberturk.m3u8"},
-    {"name": "NTV", "url": "https://www.youtube.com/@ntv/live", "filename": "ntv.m3u8"},
-    {"name": "CNN Türk", "url": "https://www.youtube.com/@cnnturk/live", "filename": "cnn_turk.m3u8"},
-    {"name": "TRT Haber", "url": "https://www.youtube.com/@trthaber/live", "filename": "trt_haber.m3u8"},
-    {"name": "TGRT Haber", "url": "https://www.youtube.com/@tgrthaber/live", "filename": "tgrt_haber.m3u8"},
-    {"name": "KRT TV", "url": "https://www.youtube.com/@krtkulturtv/live", "filename": "krt_tv.m3u8"},
-    
-    # --- EKONOMİ ---
-    {"name": "CNBC-e", "url": "https://www.youtube.com/@cnbce/live", "filename": "cnbce.m3u8"},
-    {"name": "Bloomberg HT", "url": "https://www.youtube.com/@BloombergHT/live", "filename": "bloomberg_ht.m3u8"},
-    
-    # --- ÇOCUK & ÇİZGİ FİLM ---
-    {"name": "Cartoon Network TR", "url": "https://www.youtube.com/@CartoonNetworkTurkiye/live", "filename": "cartoon_network.m3u8"},
-    {"name": "SpaceToon", "url": "https://www.youtube.com/@spacetoon/live", "filename": "spacetoon.m3u8"},
-    {"name": "Minika ÇOCUK", "url": "https://www.youtube.com/@minika/live", "filename": "minika.m3u8"},
-    {"name": "Nickelodeon TR", "url": "https://www.youtube.com/@NickelodeonTurkiye/live", "filename": "nickelodeon_tr.m3u8"},
-    {"name": "Nick Jr. TR", "url": "https://www.youtube.com/@NickJrTurkiye/live", "filename": "nick_jr_tr.m3u8"},
-    {"name": "SpongeBob (7/24 Yayın)", "url": "https://www.youtube.com/@SpongeBobOfficial/live", "filename": "spongebob_live.m3u8"},
-    
+    # --- ÇOCUK & NICKELODEON ---
+    {"name": "Nickelodeon TR", "url": "https://www.youtube.com/@NickelodeonTurkiye/live", "filename": "nickelodeon_tr.m3u"},
+    {"name": "SpongeBob (7/24)", "url": "https://www.youtube.com/@SpongeBobOfficial/live", "filename": "spongebob.m3u"},
+    {"name": "Cartoon Network TR", "url": "https://www.youtube.com/@CartoonNetworkTurkiye/live", "filename": "cartoon_network.m3u"},
+    {"name": "Minika ÇOCUK", "url": "https://www.youtube.com/@minika/live", "filename": "minika.m3u"},
+    {"name": "SpaceToon", "url": "https://www.youtube.com/@spacetoon/live", "filename": "spacetoon.m3u"},
+
     # --- MÜZİK ---
-    {"name": "Kral Pop", "url": "https://www.youtube.com/@kralpop/live", "filename": "kral_pop.m3u8"},
-    {"name": "PowerTürk", "url": "https://www.youtube.com/@PowerTurkTV/live", "filename": "powerturk.m3u8"},
-    {"name": "Dream Türk", "url": "https://www.youtube.com/@DreamTurk/live", "filename": "dream_turk.m3u8"},
-    {"name": "Lofi Girl (Ders/Relax)", "url": "https://www.youtube.com/@LofiGirl/live", "filename": "lofi_girl.m3u8"},
-    {"name": "Number1 TV (Yabancı Hit)", "url": "https://www.youtube.com/@number1tv/live", "filename": "number1_tv.m3u8"},
-    {"name": "Number1 Türk", "url": "https://www.youtube.com/@number1turktv/live", "filename": "number1_turk.m3u8"},
-    {"name": "Power TV (Global Pop)", "url": "https://www.youtube.com/@PowerTVWorld/live", "filename": "power_tv.m3u8"},
-    {"name": "MTV Lebanon", "url": "https://www.youtube.com/@mtvlebanon/live", "filename": "mtv_lebanon.m3u8"},
-    {"name": "NetD Müzik (Mix)", "url": "https://www.youtube.com/@netdmuzik/live", "filename": "netd_mix.m3u8"},
-    
-    # --- YABANCI & DÜNYA (Ücretsiz) ---
-    {"name": "NASA TV", "url": "https://www.youtube.com/@NASA/live", "filename": "nasa_tv.m3u8"},
-    {"name": "Al Jazeera English", "url": "https://www.youtube.com/@aljazeeraenglish/live", "filename": "al_jazeera_en.m3u8"},
-    {"name": "France 24 English", "url": "https://www.youtube.com/@FRANCE24.English/live", "filename": "france24_en.m3u8"},
-    {"name": "DW News (Almanya)", "url": "https://www.youtube.com/@dwnews/live", "filename": "dw_news.m3u8"},
-    {"name": "Euronews Türkçe", "url": "https://www.youtube.com/@euronews.turkce/live", "filename": "euronews_tr.m3u8"},
-    
-    # --- AZERBAYCAN ---
-    {"name": "İctimai TV", "url": "https://www.youtube.com/@ictimaitv/live", "filename": "ictimai_tv.m3u8"},
-    {"name": "ARB TV", "url": "https://www.youtube.com/@arbtv/live", "filename": "arb_tv.m3u8"}
+    {"name": "Number1 TV", "url": "https://www.youtube.com/@number1tv/live", "filename": "number1_tv.m3u"},
+    {"name": "Number1 Türk", "url": "https://www.youtube.com/@number1turktv/live", "filename": "number1_turk.m3u"},
+    {"name": "Power TV", "url": "https://www.youtube.com/@PowerTVWorld/live", "filename": "power_tv.m3u"},
+    {"name": "PowerTürk", "url": "https://www.youtube.com/@PowerTurkTV/live", "filename": "powerturk.m3u"},
+    {"name": "Dream Türk", "url": "https://www.youtube.com/@DreamTurk/live", "filename": "dream_turk.m3u"},
+    {"name": "Kral Pop", "url": "https://www.youtube.com/@kralpop/live", "filename": "kral_pop.m3u"},
+    {"name": "MTV Lebanon", "url": "https://www.youtube.com/@mtvlebanon/live", "filename": "mtv_lebanon.m3u"},
+    {"name": "NetD Mix", "url": "https://www.youtube.com/@netdmuzik/live", "filename": "netd_mix.m3u"},
+
+    # --- ULUSAL & EĞLENCE ---
+    {"name": "Show TV", "url": "https://www.youtube.com/@ShowTV/live", "filename": "show_tv.m3u"},
+    {"name": "Kanal 7", "url": "https://www.youtube.com/@kanal7/live", "filename": "kanal7.m3u"},
+    {"name": "Beyaz TV", "url": "https://www.youtube.com/@BeyazTV/live", "filename": "beyaz_tv.m3u"},
+    {"name": "TV8 Buçuk", "url": "https://www.youtube.com/@tv8bucuk/live", "filename": "tv8_bucuk.m3u"},
+    {"name": "Teve2", "url": "https://www.youtube.com/@teve2/live", "filename": "teve2.m3u"},
+    {"name": "NOW TV", "url": "https://www.youtube.com/@NOWturkiye/live", "filename": "now.m3u"},
+    {"name": "360 TV", "url": "https://www.youtube.com/@tv360comtr/live", "filename": "360_tv.m3u"},
+
+    # --- HABER ---
+    {"name": "Sözcü TV", "url": "https://www.youtube.com/@SozcuTV/live", "filename": "sozcu.m3u"},
+    {"name": "Halk TV", "url": "https://www.youtube.com/@halktv/live", "filename": "halk_tv.m3u"},
+    {"name": "Tele1", "url": "https://www.youtube.com/@tele1comtr/live", "filename": "tele1.m3u"},
+    {"name": "Habertürk", "url": "https://www.youtube.com/@HaberturkTV/live", "filename": "haberturk.m3u"},
+    {"name": "NTV", "url": "https://www.youtube.com/@ntv/live", "filename": "ntv.m3u"},
+    {"name": "CNN Türk", "url": "https://www.youtube.com/@cnnturk/live", "filename": "cnn_turk.m3u"},
+    {"name": "TRT Haber", "url": "https://www.youtube.com/@trthaber/live", "filename": "trt_haber.m3u"},
+    {"name": "TGRT Haber", "url": "https://www.youtube.com/@tgrthaber/live", "filename": "tgrt_haber.m3u"},
+    {"name": "KRT TV", "url": "https://www.youtube.com/@krtkulturtv/live", "filename": "krt_tv.m3u"},
+
+    # --- EKONOMİ ---
+    {"name": "CNBC-e", "url": "https://www.youtube.com/@cnbce/live", "filename": "cnbce.m3u"},
+    {"name": "Bloomberg HT", "url": "https://www.youtube.com/@BloombergHT/live", "filename": "bloomberg_ht.m3u"},
+
+    # --- YABANCI ---
+    {"name": "NASA TV", "url": "https://www.youtube.com/@NASA/live", "filename": "nasa_tv.m3u"},
+    {"name": "Al Jazeera English", "url": "https://www.youtube.com/@aljazeeraenglish/live", "filename": "al_jazeera_en.m3u"},
+    {"name": "France 24 English", "url": "https://www.youtube.com/@FRANCE24.English/live", "filename": "france24_en.m3u"}
 ]
 
 def get_stream_link(url):
@@ -71,10 +63,8 @@ def get_stream_link(url):
             }
         }
     }
-
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # Sadece linki al, indirme yapma
             info = ydl.extract_info(url, download=False)
             if 'url' in info:
                 return info['url']
@@ -83,7 +73,7 @@ def get_stream_link(url):
     return None
 
 def update_separate_files():
-    print(f"Toplam {len(CHANNELS)} kanal taranıyor...")
+    print(f"Toplam {len(CHANNELS)} kanal için işlem başlatılıyor...")
     print("-" * 40)
     
     for channel in CHANNELS:
@@ -92,18 +82,22 @@ def update_separate_files():
         stream_url = get_stream_link(channel['url'])
         
         if stream_url:
-            # Dosya içeriği
-            content = f"#EXTm3u8\n#EXTINF:-1,{channel['name']}\n{stream_url}"
+            # SİHİRLİ KISIM BURASI:
+            # IPTV Smarters'ın linki açabilmesi için sonuna bu kodu ekliyoruz.
+            final_url = f"{stream_url}|User-Agent=Mozilla/5.0"
             
-            # Kanalın özel dosyasına yaz
+            # Dosya içeriği
+            content = f"#EXTM3U\n#EXTINF:-1,{channel['name']}\n{final_url}"
+            
+            # Her kanal için AYRI dosyaya yazıyoruz
             with open(channel['filename'], 'w', encoding='utf-8') as f:
                 f.write(content)
-            print(f"✅ OK ({channel['filename']})")
+            print(f"✅ KAYDEDİLDİ ({channel['filename']})")
         else:
-            print("❌ YAYIN YOK (Dosya oluşturulmadı)")
+            print("❌ YAYIN YOK")
 
     print("-" * 40)
-    print("Tüm işlemler tamamlandı.")
+    print("İşlem tamamlandı. Tüm m3u dosyaları güncellendi.")
 
 if __name__ == "__main__":
     update_separate_files()
