@@ -4,6 +4,16 @@ import sys
 # GENİŞ KAPSAMLI KANAL LİSTESİ
 # Her biri için AYRI bir .m3u dosyası oluşturulur.
 CHANNELS = [
+
+    # --- YOUTUBE DIŞI ULUSAL KANALLAR (Web Sitelerinden) ---
+    # Bu kanallar YouTube'da canlı yayın yapmaz, kendi sitelerinden çekeceğiz.
+    {"name": "ATV", "url": "https://www.atv.com.tr/canli-yayin", "filename": "atv.m3u"},
+    {"name": "Star TV", "url": "https://www.startv.com.tr/canli-yayin", "filename": "star_tv.m3u"},
+    {"name": "NOW TV (Web)", "url": "https://www.nowtv.com.tr/canli-yayin", "filename": "now_web.m3u"},
+    {"name": "TV8 (Web)", "url": "https://www.tv8.com.tr/canli-yayin", "filename": "tv8_web.m3u"},
+    {"name": "Kanal D", "url": "https://www.kanald.com.tr/canli-yayin", "filename": "kanal_d.m3u"},
+    {"name": "A Haber (Web)", "url": "https://www.ahaber.com.tr/canli-yayin", "filename": "a_haber.m3u"},
+    
     # --- ÇOCUK & NICKELODEON ---
     {"name": "Nickelodeon TR", "url": "https://www.youtube.com/@NickelodeonTurkiye/live", "filename": "nickelodeon_tr.m3u"},
     {"name": "SpongeBob (7/24)", "url": "https://www.youtube.com/@SpongeBobOfficial/live", "filename": "spongebob.m3u"},
@@ -21,6 +31,7 @@ CHANNELS = [
     {"name": "MTV Lebanon", "url": "https://www.youtube.com/@mtvlebanon/live", "filename": "mtv_lebanon.m3u"},
     {"name": "NetD Mix", "url": "https://www.youtube.com/@netdmuzik/live", "filename": "netd_mix.m3u"},
 
+    
     # --- ULUSAL & EĞLENCE ---
     {"name": "Show TV", "url": "https://www.youtube.com/@ShowTV/live", "filename": "show_tv.m3u"},
     {"name": "Kanal 7", "url": "https://www.youtube.com/@kanal7/live", "filename": "kanal7.m3u"},
@@ -29,6 +40,7 @@ CHANNELS = [
     {"name": "Teve2", "url": "https://www.youtube.com/@teve2/live", "filename": "teve2.m3u"},
     {"name": "NOW TV", "url": "https://www.youtube.com/@NOWturkiye/live", "filename": "now.m3u"},
     {"name": "360 TV", "url": "https://www.youtube.com/@tv360comtr/live", "filename": "360_tv.m3u"},
+    {"name": "Kanal 7", "url": "https://www.youtube.com/@kanal7/live", "filename": "kanal7.m3u"},
 
     # --- HABER ---
     {"name": "Sözcü TV", "url": "https://www.youtube.com/@SozcuTV/live", "filename": "sozcu.m3u"},
