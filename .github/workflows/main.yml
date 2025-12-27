@@ -1,10 +1,58 @@
-- name: Kaydet ve Yukle
+name: Otomatik Guncelleme
+
+on:
+  schedule:
+    - cron: '0 */3 * * *' # Her 3 saatte bir çalışır
+  workflow_dispatch:      # Manuel tetikleme butonu
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Depoyu Çek (Checkout)
+        uses: actions/checkout@v3
+
+      # ----------------------------------------------------------------
+      # 1. ADIM: VPN (WARP) KURULUMU - YouTube Engelini Aşmak İçin ŞART
+      # ----------------------------------------------------------------
+      - name: WARP (VPN) Baslat
+        uses: fscarmen/warp-on-actions@v1.1
+
+      - name: Python Kur
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      # ----------------------------------------------------------------
+      # 2. ADIM: GEREKLİ ARAÇLARIN KURULUMU
+      # ----------------------------------------------------------------
+      - name: Kütüphaneleri Yükle
+        run: |
+          pip install requests
+          # yt-dlp'nin en güncel (master) sürümü her zaman daha iyidir
+          pip install https://github.com/yt-dlp/yt-dlp/archive/master.zip
+
+      # ----------------------------------------------------------------
+      # 3. ADIM: SCRIPTI ÇALIŞTIR
+      # ----------------------------------------------------------------
+      - name: Linkleri Guncelle
+        run: python update_link.py
+
+      # ----------------------------------------------------------------
+      # 4. ADIM: OLUŞAN TÜM DOSYALARI KAYDET VE GÖNDER
+      # ----------------------------------------------------------------
+      - name: Kaydet ve Yukle
         run: |
           git config --global user.name 'GitHub Action Bot'
           git config --global user.email 'actions@github.com'
           
-          # Bu satır, oluşan TÜM ayrı m3u dosyalarını yükler
+          # BURASI ÇOK ÖNEMLİ:
+          # *.m3u diyerek klasördeki tüm m3u dosyalarını (sozcu, ntv, show vb.) seçiyoruz.
           git add *.m3u
           
+          # Hata vermemesi için "değişiklik yoksa devam et" komutu ekli
           git commit -m "Kanallar guncellendi: $(date)" || exit 0
           git push
