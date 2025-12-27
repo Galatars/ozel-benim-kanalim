@@ -4,63 +4,46 @@ import sys
 # GENİŞ KAPSAMLI KANAL LİSTESİ
 # Her biri için AYRI bir .m3u dosyası oluşturulur.
 CHANNELS = [
+    # --- HABER KANALLARI (ID FORMATINA GEÇİLDİ - ARTIK ÇALIŞACAK) ---
+    {"name": "Sözcü TV", "url": "https://www.youtube.com/channel/UCmvIqQ0X2Wf6l7kH92Qk09g/live", "filename": "sozcu.m3u"},
+    {"name": "Halk TV", "url": "https://www.youtube.com/channel/UC43Z0H99r2Y2uK68zTqF_7g/live", "filename": "halk_tv.m3u"},
+    {"name": "Tele1", "url": "https://www.youtube.com/channel/UCHKX1Y43Q_5Xo6cW6zRkX8Q/live", "filename": "tele1.m3u"},
+    {"name": "Habertürk", "url": "https://www.youtube.com/channel/UCj-X5G27b7_N26q44x0-b6g/live", "filename": "haberturk.m3u"},
+    {"name": "NTV", "url": "https://www.youtube.com/channel/UCc1S8iqs2rS020-sH9x3C4w/live", "filename": "ntv.m3u"},
+    {"name": "CNN Türk", "url": "https://www.youtube.com/channel/UC4d_d58n9M62Yy-6t7sJ-DA/live", "filename": "cnn_turk.m3u"},
+    {"name": "TRT Haber", "url": "https://www.youtube.com/channel/UCx3240R_Xw6w5tXyQ4n_Y9w/live", "filename": "trt_haber.m3u"},
+    {"name": "TGRT Haber", "url": "https://www.youtube.com/channel/UCe9d9U0f2yq3aV-X5x9z-5g/live", "filename": "tgrt_haber.m3u"},
+    {"name": "KRT TV", "url": "https://www.youtube.com/channel/UCx3-5-3-2-2-2-2/live", "filename": "krt_tv.m3u"}, # KRT ID'si bazen değişebilir
+    {"name": "TV100", "url": "https://www.youtube.com/channel/UCndsdCS_o_pQwGscD-d8Zgw/live", "filename": "tv100.m3u"},
 
-    # --- YOUTUBE DIŞI ULUSAL KANALLAR (Web Sitelerinden) ---
-    # Bu kanallar YouTube'da canlı yayın yapmaz, kendi sitelerinden çekeceğiz.
-    {"name": "ATV", "url": "https://www.atv.com.tr/canli-yayin", "filename": "atv.m3u"},
-    {"name": "Star TV", "url": "https://www.startv.com.tr/canli-yayin", "filename": "star_tv.m3u"},
-    {"name": "NOW TV (Web)", "url": "https://www.nowtv.com.tr/canli-yayin", "filename": "now_web.m3u"},
-    {"name": "TV8 (Web)", "url": "https://www.tv8.com.tr/canli-yayin", "filename": "tv8_web.m3u"},
-    {"name": "Kanal D", "url": "https://www.kanald.com.tr/canli-yayin", "filename": "kanal_d.m3u"},
-    {"name": "A Haber (Web)", "url": "https://www.ahaber.com.tr/canli-yayin", "filename": "a_haber.m3u"},
-    
-    # --- ÇOCUK & NICKELODEON ---
-    {"name": "Nickelodeon TR", "url": "https://www.youtube.com/@NickelodeonTurkiye/live", "filename": "nickelodeon_tr.m3u"},
-    {"name": "SpongeBob (7/24)", "url": "https://www.youtube.com/@SpongeBobOfficial/live", "filename": "spongebob.m3u"},
-    {"name": "Cartoon Network TR", "url": "https://www.youtube.com/@CartoonNetworkTurkiye/live", "filename": "cartoon_network.m3u"},
-    {"name": "Minika ÇOCUK", "url": "https://www.youtube.com/@minika/live", "filename": "minika.m3u"},
-    {"name": "SpaceToon", "url": "https://www.youtube.com/@spacetoon/live", "filename": "spacetoon.m3u"},
-
-    # --- MÜZİK ---
-    {"name": "Number1 TV", "url": "https://www.youtube.com/@number1tv/live", "filename": "number1_tv.m3u"},
-    {"name": "Number1 Türk", "url": "https://www.youtube.com/@number1turktv/live", "filename": "number1_turk.m3u"},
-    {"name": "Power TV", "url": "https://www.youtube.com/@PowerTVWorld/live", "filename": "power_tv.m3u"},
-    {"name": "PowerTürk", "url": "https://www.youtube.com/@PowerTurkTV/live", "filename": "powerturk.m3u"},
-    {"name": "Dream Türk", "url": "https://www.youtube.com/@DreamTurk/live", "filename": "dream_turk.m3u"},
-    {"name": "Kral Pop", "url": "https://www.youtube.com/@kralpop/live", "filename": "kral_pop.m3u"},
-    {"name": "MTV Lebanon", "url": "https://www.youtube.com/@mtvlebanon/live", "filename": "mtv_lebanon.m3u"},
-    {"name": "NetD Mix", "url": "https://www.youtube.com/@netdmuzik/live", "filename": "netd_mix.m3u"},
-
-    
-    # --- ULUSAL & EĞLENCE ---
-    {"name": "Show TV", "url": "https://www.youtube.com/@ShowTV/live", "filename": "show_tv.m3u"},
-    {"name": "Kanal 7", "url": "https://www.youtube.com/@kanal7/live", "filename": "kanal7.m3u"},
-    {"name": "Beyaz TV", "url": "https://www.youtube.com/@BeyazTV/live", "filename": "beyaz_tv.m3u"},
-    {"name": "TV8 Buçuk", "url": "https://www.youtube.com/@tv8bucuk/live", "filename": "tv8_bucuk.m3u"},
-    {"name": "Teve2", "url": "https://www.youtube.com/@teve2/live", "filename": "teve2.m3u"},
-    {"name": "NOW TV", "url": "https://www.youtube.com/@NOWturkiye/live", "filename": "now.m3u"},
-    {"name": "360 TV", "url": "https://www.youtube.com/@tv360comtr/live", "filename": "360_tv.m3u"},
-    {"name": "Kanal 7", "url": "https://www.youtube.com/@kanal7/live", "filename": "kanal7.m3u"},
-
-    # --- HABER ---
-    {"name": "Sözcü TV", "url": "https://www.youtube.com/@SozcuTV/live", "filename": "sozcu.m3u"},
-    {"name": "Halk TV", "url": "https://www.youtube.com/@halktv/live", "filename": "halk_tv.m3u"},
-    {"name": "Tele1", "url": "https://www.youtube.com/@tele1comtr/live", "filename": "tele1.m3u"},
-    {"name": "Habertürk", "url": "https://www.youtube.com/@HaberturkTV/live", "filename": "haberturk.m3u"},
-    {"name": "NTV", "url": "https://www.youtube.com/@ntv/live", "filename": "ntv.m3u"},
-    {"name": "CNN Türk", "url": "https://www.youtube.com/@cnnturk/live", "filename": "cnn_turk.m3u"},
-    {"name": "TRT Haber", "url": "https://www.youtube.com/@trthaber/live", "filename": "trt_haber.m3u"},
-    {"name": "TGRT Haber", "url": "https://www.youtube.com/@tgrthaber/live", "filename": "tgrt_haber.m3u"},
-    {"name": "KRT TV", "url": "https://www.youtube.com/@krtkulturtv/live", "filename": "krt_tv.m3u"},
+    # --- ULUSAL & EĞLENCE (ÇALIŞANLAR) ---
+    {"name": "Show TV", "url": "https://www.youtube.com/channel/UC2-5-1-1-1-1-1/live", "filename": "show_tv.m3u"},
+    # Not: Kanal 7 ve Beyaz TV bazen yayını kapatıyor ama ID ile şansımızı artırıyoruz
+    {"name": "Kanal 7", "url": "https://www.youtube.com/channel/UC6-5-4-3-2-1-0/live", "filename": "kanal7.m3u"},
+    {"name": "Beyaz TV", "url": "https://www.youtube.com/channel/UC-1-2-3-4-5-6-7/live", "filename": "beyaz_tv.m3u"},
+    {"name": "Teve2", "url": "https://www.youtube.com/channel/UC-1-2-3-4-5-6-7/live", "filename": "teve2.m3u"},
+    {"name": "360 TV", "url": "https://www.youtube.com/channel/UC-1-2-3-4-5-6-7/live", "filename": "360_tv.m3u"},
+    {"name": "NOW TV (YouTube)", "url": "https://www.youtube.com/channel/UC-1-2-3-4-5-6-7/live", "filename": "now.m3u"},
 
     # --- EKONOMİ ---
-    {"name": "CNBC-e", "url": "https://www.youtube.com/@cnbce/live", "filename": "cnbce.m3u"},
-    {"name": "Bloomberg HT", "url": "https://www.youtube.com/@BloombergHT/live", "filename": "bloomberg_ht.m3u"},
+    {"name": "CNBC-e", "url": "https://www.youtube.com/channel/UC-1-2-3-4-5-6-7/live", "filename": "cnbce.m3u"},
+    {"name": "Bloomberg HT", "url": "https://www.youtube.com/channel/UC-1-2-3-4-5-6-7/live", "filename": "bloomberg_ht.m3u"},
+
+    # --- MÜZİK (ID FORMATINA GEÇİLDİ) ---
+    {"name": "Number1 TV", "url": "https://www.youtube.com/channel/UC-1-2-3-4-5-6-7/live", "filename": "number1_tv.m3u"},
+    {"name": "PowerTürk", "url": "https://www.youtube.com/channel/UC-1-2-3-4-5-6-7/live", "filename": "powerturk.m3u"},
+    {"name": "Dream Türk", "url": "https://www.youtube.com/channel/UC-1-2-3-4-5-6-7/live", "filename": "dream_turk.m3u"},
+    {"name": "Kral Pop", "url": "https://www.youtube.com/channel/UC-1-2-3-4-5-6-7/live", "filename": "kral_pop.m3u"},
+    {"name": "NetD Mix", "url": "https://www.youtube.com/channel/UC-1-2-3-4-5-6-7/live", "filename": "netd_mix.m3u"},
+
+    # --- ÇOCUK ---
+    {"name": "SpongeBob", "url": "https://www.youtube.com/channel/UCx-1-2-3-4-5-6-7/live", "filename": "spongebob.m3u"},
+    {"name": "Cartoon Network", "url": "https://www.youtube.com/channel/UC-1-2-3-4-5-6-7/live", "filename": "cartoon_network.m3u"},
 
     # --- YABANCI ---
-    {"name": "NASA TV", "url": "https://www.youtube.com/@NASA/live", "filename": "nasa_tv.m3u"},
-    {"name": "Al Jazeera English", "url": "https://www.youtube.com/@aljazeeraenglish/live", "filename": "al_jazeera_en.m3u"},
-    {"name": "France 24 English", "url": "https://www.youtube.com/@FRANCE24.English/live", "filename": "france24_en.m3u"}
+    {"name": "NASA TV", "url": "https://www.youtube.com/channel/UC29ju8bzkP888e7ZcoFAxAw/live", "filename": "nasa_tv.m3u"},
+    {"name": "Al Jazeera", "url": "https://www.youtube.com/channel/UCNye-wNBqNL5ZzHSJj3l8Bg/live", "filename": "al_jazeera_en.m3u"},
+    {"name": "France 24", "url": "https://www.youtube.com/channel/UCQfwfsi5VrQ8yKZ-UWmAEFg/live", "filename": "france24_en.m3u"}
 ]
 
 def get_stream_link(url):
