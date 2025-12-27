@@ -4,6 +4,39 @@ import sys
 # GENİŞ KAPSAMLI KANAL LİSTESİ
 # Her biri için AYRI bir .m3u dosyası oluşturulur.
 CHANNELS = [
+    # ==========================================================
+    # 1. AMERİKA & İNGİLTERE (WEB KAYNAKLI - HABER & EĞLENCE)
+    # ==========================================================
+    # ABC News (ABD - Web): Genellikle açıktır
+    {"name": "ABC News Live (USA)", "url": "https://abcnews.go.com/Live", "filename": "abc_news_usa.m3u"},
+    # CBS News (ABD - Web)
+    {"name": "CBS News (USA)", "url": "https://www.cbsnews.com/live/", "filename": "cbs_news_usa.m3u"},
+    # Sky News (İngiltere - YouTube) - Resmi ve kalitelidir
+    {"name": "Sky News UK", "url": "https://www.youtube.com/@SkyNews/live", "filename": "sky_news_uk.m3u"},
+    # NASA TV (ABD - Resmi Web Yayını)
+    {"name": "NASA TV Public", "url": "https://www.nasa.gov/multimedia/nasatv/index.html", "filename": "nasa_tv.m3u"},
+    # Voice of America (ABD - Global)
+    {"name": "Voice of America", "url": "https://www.youtube.com/@voanews/live", "filename": "voa_news.m3u"},
+
+    # ==========================================================
+    # 2. AVRUPA KANALLARI (WEB & YOUTUBE)
+    # ==========================================================
+    # DW (Almanya - İngilizce Yayın)
+    {"name": "DW News (Germany)", "url": "https://www.youtube.com/@dwnews/live", "filename": "dw_news.m3u"},
+    # France 24 (Fransa - İngilizce)
+    {"name": "France 24 English", "url": "https://www.youtube.com/@FRANCE24.English/live", "filename": "france24_en.m3u"},
+    # Euronews (Avrupa - Türkçe)
+    {"name": "Euronews Türkçe", "url": "https://www.youtube.com/@euronews.turkce/live", "filename": "euronews_tr.m3u"},
+    # TVP World (Polonya - İngilizce)
+    {"name": "TVP World", "url": "https://www.youtube.com/@TVPWorld/live", "filename": "tvp_world.m3u"},
+
+    # ==========================================================
+    # 3. TÜRK KANALLARI (EURO / AVRUPA YAYINLARI)
+    # ==========================================================
+    # Euro kanalları yurtdışı IP'lerine daha toleranslıdır.
+    {"name": "Kanal 7 Avrupa", "url": "https://www.kanal7avrupa.com/canli-yayin", "filename": "kanal7_avrupa.m3u"},
+    {"name": "TV8 Int (Avrupa)", "url": "https://www.tv8int.com/canli-yayin", "filename": "tv8_int.m3u"},
+    
     # --- HABER KANALLARI (ID FORMATINA GEÇİLDİ - ARTIK ÇALIŞACAK) ---
     {"name": "Sözcü TV", "url": "https://www.youtube.com/channel/UCmvIqQ0X2Wf6l7kH92Qk09g/live", "filename": "sozcu.m3u"},
     {"name": "Halk TV", "url": "https://www.youtube.com/channel/UC43Z0H99r2Y2uK68zTqF_7g/live", "filename": "halk_tv.m3u"},
