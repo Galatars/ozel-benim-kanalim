@@ -22,14 +22,13 @@ CHANNELS = [
     {"name": "TV8 Int (Avrupa)", "url": "https://www.tv8int.com/canli-yayin", "filename": "tv8_int.m3u"},
     
     # --- HABER KANALLARI ---
-    {"name": "Sözcü TV", "url": "https://www.youtube.com/channel/UCmvIqQ0X2Wf6l7kH92Qk09g/live", "filename": "sozcu.m3u"},
+    {"name": "Sözcü TV", "url": "https://www.youtube.com/watch?v=ztmY_cCtUl0", "filename": "sozcu.m3u"},
     {"name": "Halk TV", "url": "https://www.youtube.com/channel/UC43Z0H99r2Y2uK68zTqF_7g/live", "filename": "halk_tv.m3u"},
     {"name": "Tele1", "url": "https://www.youtube.com/channel/UCHKX1Y43Q_5Xo6cW6zRkX8Q/live", "filename": "tele1.m3u"},
     {"name": "Habertürk", "url": "https://www.youtube.com/channel/UCj-X5G27b7_N26q44x0-b6g/live", "filename": "haberturk.m3u"},
     {"name": "NTV", "url": "https://www.youtube.com/channel/UCc1S8iqs2rS020-sH9x3C4w/live", "filename": "ntv.m3u"},
     {"name": "CNN Türk", "url": "https://www.youtube.com/channel/UC4d_d58n9M62Yy-6t7sJ-DA/live", "filename": "cnn_turk.m3u"},
     {"name": "TRT Haber", "url": "https://www.youtube.com/channel/UCx3240R_Xw6w5tXyQ4n_Y9w/live", "filename": "trt_haber.m3u"},
-    {"name": "TGRT Haber", "url": "https://www.youtube.com/channel/UCe9d9U0f2yq3aV-X5x9z-5g/live", "filename": "tgrt_haber.m3u"},
     {"name": "TV100", "url": "https://www.youtube.com/channel/UCndsdCS_o_pQwGscD-d8Zgw/live", "filename": "tv100.m3u"},
 
     # --- ULUSAL & EĞLENCE ---
